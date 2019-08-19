@@ -37,6 +37,21 @@ import 'mint-ui/lib/style.css';
 import VuePreview from 'vue-preview';
 Vue.use(VuePreview);
 
+// 导入vuex 全局数据共享仓库
+import Vuex from 'vuex';
+Vue.use(Vuex);
+
+const store = new Vuex.Store({
+    state: {
+        count: 0
+    },
+    mutations: {
+        increase(state, n) {
+            state.count += n;
+        }
+    }    
+})
+
 import router from './router.js';
 
 import app from './app.vue';
@@ -44,5 +59,6 @@ import app from './app.vue';
 const vm = new Vue({
     el: '#app',
     render: c => c(app),
-    router
+    router,
+    store
 })
