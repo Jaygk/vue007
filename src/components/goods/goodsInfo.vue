@@ -117,7 +117,7 @@
             addToShopCar() {
                 this.ballFlag = !this.ballFlag;
                 // 当点击加入购物车时, 通过改变共享仓库store中的count值,改变购物车中的数量
-                this.$store.commit('increase', this.selectedCount);
+                this.$store.commit('addToCar', { id: this.id, count: this.selectedCount, price: this.goodsinfo.sell_price, selected: true });
             },
             beforeEnter(el) {
                 el.style.transform = "translate(0, 0)";

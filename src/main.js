@@ -41,13 +41,92 @@ Vue.use(VuePreview);
 import Vuex from 'vuex';
 Vue.use(Vuex);
 
+// 从本地 localStorage 中取出shopCar
+let shopCar = JSON.parse(localStorage.getItem('shopCar') || '[]');
+
 const store = new Vuex.Store({
     state: {
-        count: 0
+        shopCar
     },
     mutations: {
-        increase(state, n) {
-            state.count += n;
+        addToCar(state, goodsList) {
+            let flag = false;
+            state.shopCar.some(item => {
+                if (parseInt(item.id) === parseInt(goodsList.id)) {
+                    item.count += parseInt(goodsList.count);
+                    flag = true;
+                    return true;
+                }
+            });
+            if (!flag) {
+                state.shopCar.push(goodsList);
+            }
+
+            // 当更新 shopCar 之后, 把 shopCar 数组存储到本地的 localStorage 中
+            localStorage.setItem('shopCar', JSON.stringify(state.shopCar));
+        },
+        updateGoodsInfo(state, goodsObj) {
+            state.shopCar.some(item => {
+                if (parseInt(item.id) === parseInt(goodsObj.id)) {
+                    item.count = parseInt(goodsObj.count);
+                    // console.log('ok');
+                    return true;
+                }
+            });
+            // 当更新 shopCar 之后, 把 shopCar 数组存储到本地的 localStorage 中
+            localStorage.setItem('shopCar', JSON.stringify(state.shopCar));
+        },
+        removeGoodFromCar(state, id) {
+            let index = state.shopCar.findIndex(item => parseInt(item.id) === parseInt(id));
+            state.shopCar.splice(index, 1);
+            // 当更新 shopCar 之后, 把 shopCar 数组存储到本地的 localStorage 中
+            localStorage.setItem('shopCar', JSON.stringify(state.shopCar));
+        },
+        updateSelect(state, obj) {
+            state.shopCar.some(item => {
+                if (parseInt(item.id) === parseInt(obj.id)) {
+                    item.selected = obj.selected;
+                    return true;
+                }
+            })
+            // 当更新 shopCar 之后, 把 shopCar 数组存储到本地的 localStorage 中
+            localStorage.setItem('shopCar', JSON.stringify(state.shopCar));
+        }
+    },
+    getters: {
+        getCount(state) {
+            let count = 0;
+            state.shopCar.forEach(item => {
+                count += item.count;
+            })
+            return count;
+        },
+        getGoodsCount(state) {
+            let c = {};
+            state.shopCar.forEach(item => {
+                c[item.id] = item.count;
+            });
+            return c;
+        },
+        getValue(state) {
+            let obj = {};
+            state.shopCar.forEach(item => {
+                obj[item.id] = item.selected;
+            });
+            return obj;
+        },
+        getFinalCountAndAmount(state) {
+            let obj = {
+                count: 0,
+                amount: 0
+            };
+            state.shopCar.forEach(item => {
+                if (item.selected) {
+                    obj.count += parseInt(item.count);
+                    obj.amount += item.count * item.price;
+                }
+            });
+            return obj;
         }
     }    
 })

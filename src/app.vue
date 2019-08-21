@@ -1,7 +1,12 @@
+import { default } from './components/tabbar/shopcar.vue';
 <template>
     <div class="app-container">
         <!-- 顶部 Header 区域 -->
-        <mt-header fixed title="Vue小项目"></mt-header>
+        <mt-header fixed title="Vue小项目">
+            <span slot="left" v-show="flag">
+                <mt-button icon="back" @click="back">返回</mt-button>
+            </span>
+        </mt-header>
 
         <!-- 中间的路由 router-view 区域 -->
         <transition>
@@ -19,7 +24,8 @@
                 <span class="mui-tab-label">会员</span>
             </router-link>
             <router-link class="mui-tab-item-lw" to="/shopcar">
-                <span class="mui-icon mui-icon-extra mui-icon-extra-cart"><span class="mui-badge" id="badge">{{ $store.state.count }}</span></span>
+                <span class="mui-icon mui-icon-extra mui-icon-extra-cart"><span class="mui-badge"
+                        id="badge">{{ $store.getters.getCount }}</span></span>
                 <span class="mui-tab-label">购物车</span>
             </router-link>
             <router-link class="mui-tab-item-lw" to="/search">
@@ -32,7 +38,30 @@
 </template>
 
 <script>
-
+    export default {
+        data() {
+            return {
+                flag: true
+            }
+        },
+        methods: {
+            back() {
+                this.$router.go(-1);
+            }
+        },
+        created() {
+            this.flag = this.$route.path === '/home' ? false : true;
+        },
+        watch: {
+            '$route.path': function(newVal) {
+                if (newVal === '/home') {
+                    this.flag = false;
+                } else {
+                    this.flag = true;
+                }
+            }
+        }
+    }
 </script>
 
 <style lang="scss" scoped>
@@ -89,6 +118,7 @@
         overflow: hidden;
         text-overflow: ellipsis;
     }
+
     .mint-header {
         z-index: 99;
     }
